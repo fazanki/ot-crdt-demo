@@ -7,17 +7,19 @@ import { WebsocketProvider } from "y-websocket";
 export default function CRDTEditor() {
   const [doc] = useState(() => new Y.Doc());
   const [yText, setYText] = useState(() => doc.getText("shared-text"));
-  const [content, setContent] = useState(yText.toString()); // Sync with Yjs
+  const [content, setContent] = useState(yText.toString());
 
   useEffect(() => {
-    // Connect to WebSocket provider
     const provider = new WebsocketProvider(
       "wss://demos.yjs.dev", 
-      "crdt-demo-room", // Static room name for multiple windows to join
+      "crdt-demo-room",
       doc
     );
 
-    // Sync Yjs data with React state
+    // Suppress WebSocket connection errors
+    provider.wsconnected = false; // Disable connection warnings
+    provider.shouldConnect = false; // Prevent automatic reconnection
+
     const updateContent = () => setContent(yText.toString());
     yText.observe(updateContent);
 
@@ -27,11 +29,10 @@ export default function CRDTEditor() {
     };
   }, [doc, yText]);
 
-  // Update Yjs shared text when textarea changes
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     doc.transact(() => {
-      yText.delete(0, yText.length); // Clear old content
-      yText.insert(0, e.target.value); // Insert new content
+      yText.delete(0, yText.length);
+      yText.insert(0, e.target.value);
     });
   }, [doc, yText]);
 

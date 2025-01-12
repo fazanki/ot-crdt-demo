@@ -36,7 +36,7 @@ export default function OTEditor() {
                 socket.addEventListener('close', () => {
                     console.log("WebSocket connection closed");
                 });
-
+                // @ts-ignore
                 const connection = new ShareDB.Connection(socket);
                 const doc = connection.get("documents", "example-doc");
                 docRef.current = doc;
@@ -84,7 +84,7 @@ export default function OTEditor() {
                 const minLen = Math.min(text.length, newText.length);
                 while (i < minLen && text[i] === newText[i]) i++;
 
-                const ops = [];
+                const ops: any[] = [];
 
                 // If we need to delete characters
                 if (i < text.length) {

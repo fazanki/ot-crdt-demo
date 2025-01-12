@@ -40,6 +40,7 @@ function initOTServer() {
 
     global.wss.on('connection', (ws) => {
       console.log('Client connected to WebSocket');
+      // @ts-ignore
       const stream = new WebSocketJSONStream(ws);
       global.backend!.listen(stream);
     });
